@@ -1,0 +1,54 @@
+@startuml
+' Activity diagram for University of Nairobi monthly work report
+' Uses modern PlantUML partition syntax
+
+start
+
+partition "Staff" {
+    :Enter personal info (name, phone);
+    :Specify report period (start / end date);
+    :Fill task grid (S/no, Task, Activities, Date, Hrs, Supervisor, Remarks);
+    :Attach scanned documents (staff movement, employment offer);
+    if (All documents attached?) then (yes)
+        :Sign report;
+    else
+        :Await missing docs;
+        --> Staff;
+    endif
+    :Submit to Supervisor;
+}
+
+partition "Supervisor" {
+    if (Review tasks complete?) then (yes)
+        :Approve each task;
+        :Confirm report;
+    else
+        :Request corrections;
+        --> Staff;
+    endif
+    if (All docs verified?) then (yes)
+        :Sign as confirmed;
+    else
+        :Hold until docs complete;
+        --> Staff;
+    endif
+}
+
+partition "Head of Section" {
+    if (Supervisor signed?) then (yes)
+        :Final approval;
+    else
+        :Return for corrections;
+        --> Staff;
+    endif
+}
+
+partition "Finance" {
+    :Compute total hours from tasks;
+    :Calculate payment per contract;
+    :Mark report as paid;
+    :Generate summary reports;
+}
+
+stop
+@enduml
