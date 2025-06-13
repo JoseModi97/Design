@@ -1,0 +1,44 @@
+@startuml
+' Activity diagram for work report processing
+' Updated syntax for newer PlantUML versions
+
+start
+
+partition "Staff" {
+    :Fill work report with tasks, hours and supervisor remarks;
+    if (Documents attached?) then (yes)
+        :Sign report;
+    else (no)
+        :Await documents;
+        stop
+    endif
+    :Submit to Supervisor;
+}
+
+partition "Supervisor" {
+    if (Review tasks?) then (complete)
+        :Approve each task;
+        :Confirm report;
+    else
+        :Request corrections;
+        -> Staff : Update report;
+        -> Supervisor : Resubmit report;
+    endif
+}
+
+partition "Head of Section" {
+    if (Supervisor approved?) then (yes)
+        :Final approval;
+    else
+        :Hold report;
+        stop
+    endif
+}
+
+partition "Finance" {
+    :Calculate total hours;
+    :Process payment;
+}
+
+stop
+@enduml
