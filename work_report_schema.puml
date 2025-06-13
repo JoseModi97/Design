@@ -1,0 +1,100 @@
+@startuml
+' Database schema for work report system
+left to right direction
+hide circle
+
+entity "users" {
+    *id : serial
+    --
+    full_name : varchar(255)
+    phone_number : varchar(20)
+    role : varchar(50)
+    created_at : timestamp
+}
+
+entity "work_reports" {
+    *id : serial
+    --
+    title : varchar(255)
+    staff_id : int
+    start_date : date
+    end_date : date
+    signed_staff_signature : text
+    supervisor_confirmed : boolean
+    supervisor_name : varchar(255)
+    supervisor_signature : text
+    supervisor_date : date
+    head_section_endorsed : boolean
+    head_section_signature : text
+    head_section_date : date
+    is_fully_processed : boolean
+    is_paid : boolean
+    created_at : timestamp
+}
+
+entity "report_tasks" {
+    *id : serial
+    --
+    report_id : int
+    serial_no : int
+    task_title : varchar(255)
+    activities : text
+    date_completed : date
+    hours_worked : numeric(5,2)
+    supervisor_id : int
+    supervisor_remarks : text
+}
+
+entity "scanned_documents" {
+    *id : serial
+    --
+    report_id : int
+    doc_type : varchar(100)
+    image_url : text
+    staff_signature : text
+    director_signature : text
+    contract_start_date : date
+}
+
+entity "approval_log" {
+    *id : serial
+    --
+    report_id : int
+    approved_by : int
+    role : varchar(50)
+    approved_at : timestamp
+    remarks : text
+}
+
+entity "earnings_summary" {
+    *id : serial
+    --
+    staff_id : int
+    month_start : date
+    month_end : date
+    total_hours : numeric(6,2)
+    hourly_rate : numeric(10,2)
+    total_earned : numeric(10,2)
+    is_paid : boolean
+}
+
+entity "feedback" {
+    *id : serial
+    --
+    report_id : int
+    given_by : int
+    role : varchar(50)
+    feedback_text : text
+    created_at : timestamp
+}
+
+users ||--o{ work_reports : "staff_id"
+work_reports ||--o{ report_tasks : "report_id"
+work_reports ||--o{ scanned_documents : "report_id"
+work_reports ||--o{ approval_log : "report_id"
+users ||--o{ approval_log : "approved_by"
+users ||--o{ report_tasks : "supervisor_id"
+users ||--o{ earnings_summary : "staff_id"
+work_reports ||--o{ feedback : "report_id"
+users ||--o{ feedback : "given_by"
+@enduml
